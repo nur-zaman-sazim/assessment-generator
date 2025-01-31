@@ -23,6 +23,7 @@ export async function generate(config: TConfig) {
   (async () => {
     const { textStream } = streamText({
       model: google("gemini-1.5-flash"),
+      temperature: 1,
       prompt: getPrompt(
         businessTheme,
         frontend,
