@@ -1,20 +1,38 @@
 "use server";
 
 import { streamText } from "ai";
-import { google } from "@ai-sdk/google";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createStreamableValue } from "ai/rsc";
+import { getPrompt } from "./prompt";
 
-export async function generate(input: string) {
+export async function generate(config: TConfig) {
+  const {
+    apiKey,
+    businessTheme,
+    frontend,
+    backend,
+    database,
+    uiFramework,
+    formLibrary,
+  } = config;
   const stream = createStreamableValue("");
+
+  const google = createGoogleGenerativeAI({ apiKey });
 
   (async () => {
     const { textStream } = streamText({
-      model: google("gemini-1.5-flash"), //TODO: change model
-      prompt: input,
+      model: google("gemini-1.5-flash"),
+      prompt: getPrompt(
+        businessTheme,
+        frontend,
+        backend,
+        database,
+        uiFramework,
+        formLibrary
+      ),
     });
 
     for await (const delta of textStream) {
-      console.log(delta);
       stream.update(delta);
     }
 
