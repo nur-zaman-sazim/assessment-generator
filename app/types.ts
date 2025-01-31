@@ -1,4 +1,4 @@
-type TConfig = {
+export type TConfig = {
   apiKey: string;
   businessTheme: string;
   frontend: string;

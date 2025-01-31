@@ -4,6 +4,7 @@ import { streamText } from "ai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createStreamableValue } from "ai/rsc";
 import { getPrompt } from "./prompt";
+import { TConfig } from "./types";
 
 export async function generate(config: TConfig) {
   const {

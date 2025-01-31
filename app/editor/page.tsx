@@ -5,29 +5,19 @@ import { ArrowLeft, Download, Save, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { readStreamableValue } from "ai/rsc";
 import { motion, AnimatePresence } from "framer-motion";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { Components } from "react-markdown";
 import { generate } from "../action";
 import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import "react-syntax-highlighter/dist/cjs/styles/prism/vsc-dark-plus";
 
 export const maxDuration = 30;
 
-const slideIn = {
-  hidden: { opacity: 0, x: 20 },
-  visible: { opacity: 1, x: 0 },
-};
-
-const stagger = {
-  visible: {
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
-    },
-  },
-};
+interface CodeComponentProps extends React.HTMLAttributes<HTMLElement> {
+  inline?: boolean;
+}
 
 export default function EditorPage() {
   const router = useRouter();
@@ -71,11 +61,13 @@ export default function EditorPage() {
           formLibrary: "React Hook Form",
         })
     );
+
     if (!config.apiKey) {
       alert("Please enter your API key. from config");
       router.push("/");
       return;
     }
+
     setGeneration("");
     handleSave();
 
@@ -85,8 +77,8 @@ export default function EditorPage() {
     }
   };
 
-  const MarkdownComponents = {
-    code({ node, inline, className, children, ...props }: any) {
+  const MarkdownComponents: Components = {
+    code({ inline, className, children, ...props }: CodeComponentProps) {
       const match = /language-(\w+)/.exec(className || "");
       return !inline && match ? (
         <motion.div
@@ -95,7 +87,7 @@ export default function EditorPage() {
           transition={{ duration: 0.3 }}
         >
           <SyntaxHighlighter
-            style={vscDarkPlus}
+            style={vscDarkPlus as any}
             language={match[1]}
             PreTag="div"
             {...props}
@@ -109,7 +101,7 @@ export default function EditorPage() {
         </code>
       );
     },
-    table({ children }: any) {
+    table({ children }) {
       return (
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
@@ -122,17 +114,17 @@ export default function EditorPage() {
         </motion.div>
       );
     },
-    th({ children }: any) {
+    th({ children }) {
       return (
         <th className="border border-gray-300 px-4 py-2 text-left bg-gray-100">
           {children}
         </th>
       );
     },
-    td({ children }: any) {
+    td({ children }) {
       return <td className="border border-gray-300 px-4 py-2">{children}</td>;
     },
-    blockquote({ children }: any) {
+    blockquote({ children }) {
       return (
         <motion.blockquote
           initial={{ opacity: 0, x: -20 }}
